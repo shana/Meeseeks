@@ -6,15 +6,35 @@
 #   Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
 #
 
+Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+
 write-output "Installing Chocolatey"
 iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
  
+#--- System frameworks ---
+write-output "Installing essential system frameworks"
+choco install -y dotnet4.6.1 mingw 
+
+if ($PSVersionTable.PSVersion -lt "3.0") {
+    choco install -y powershell4
+}
+
 write-output "Installing scoop"
 iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
 
+#--- Essential tools
+write-output "Installing essential tooling"
+choco install -y winscp winrar 7zip netcat
+
+#--- Git ---
+write-output "Installing git"
+choco install -y git
+$env:path+='C:\Program Files\Git\cmd'
+refreshenv
+
 #--- Apps ---
-write-output "Installing a few apps"
-choco install -y googlechrome notepadplusplus winscp winrar mingw 7zip dotnet4.6.1 netcat
+write-output "Installing browsers and editors"
+choco install -y googlechrome notepadplusplus sublimetext3 
 
 #---- RE Tools ---
 write-output "Installing the RE tools"
@@ -47,14 +67,6 @@ $Shortcut.Save()
 choco install -y dependencywalker 
 $TargetFile = "C:\ProgramData\chocolatey\lib\dependencywalker\content\depends.exe"
 $ShortcutFile = "$env:Public\Desktop\DependencyWalker.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
-
-choco install -y ollydbg 
-$TargetFile = "C:\Program Files\OllyDbg\OLLYDBG.EXE"
-$ShortcutFile = "$env:Public\Desktop\OllyDbg.lnk"
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $TargetFile
@@ -131,18 +143,6 @@ write-output "...so here's a hack job"
     # ──────────────────────────────────
     # ──────────────────────────────────
 
-# choco install -y ida-free --x86
-# $TargetFile = "C:\Program Files\IDA Freeware 7.0\ida.exe"
-# $ShortcutFile = "$env:Public\Desktop\Ida Freeware.lnk"
-# $WScriptShell = New-Object -ComObject WScript.Shell
-# $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-# $Shortcut.TargetPath = $TargetFile
-# $Shortcut.Save()
-
-choco install -y git
-$env:path+='C:\Program Files\Git\cmd'
-refreshenv
-
 git clone https://github.com/shana/Meeseeks.git
 
 choco install -y ida-5.0 -s .\Meeseeks\Packages\
@@ -169,11 +169,6 @@ $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $TargetFile
 $Shortcut.Save()
 
-$url_RDG = "http://rdgsoft.net/downloads/RDG.Packer.Detector.v0.7.6.2017.zip"
-$output_RDGArchive = "$env:Public\Documents\RDGPackerDetector.zip"
-$output_RDG = "$env:Public\Documents\"
-(New-Object System.Net.WebClient).DownloadFile($url_RDG, $output_RDGArchive)
-
 # $url_ByteHist = "https://cert.at/static/downloads/software/bytehist/bytehist_1_0_102_windows.zip"
 # $output_ByteHistArchive = "$env:Public\Documents\bytehist_1_0_102_windows.zip"
 # $output_ByteHist = "$env:Public\Documents\ByteHist\"
@@ -199,9 +194,17 @@ $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $TargetFile
 $Shortcut.Save()
 
+choco install -y ollydbg 
+$TargetFile = "C:\Program Files (x86)\OllyDbg\OLLYDBG.EXE"
+$ShortcutFile = "$env:Public\Desktop\OllyDbg.lnk"
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $TargetFile
+$Shortcut.Save()
+
 $url_OllyDump = "http://www.openrce.org/downloads/download_file/108"
 $output_OllyDumpArchive = "$env:Public\Documents\OllyDump.zip"
-$output_OllyDump = "C:\Program Files\OllyDbg\"
+$output_OllyDump = "C:\Program Files (x86)\OllyDbg\"
 (New-Object System.Net.WebClient).DownloadFile($url_OllyDump, $output_OllyDumpArchive)
 $shell_1 = new-object -com shell.application
 $zip_1 = $shell_1.NameSpace($output_OllyDumpArchive)
@@ -209,6 +212,11 @@ foreach($item_1 in $zip_1.items())
 {
         $shell_1.Namespace($output_OllyDump).copyhere($item_1)
 }
+
+$url_RDG = "http://rdgsoft.net/downloads/RDG.Packer.Detector.v0.7.6.2017.zip"
+$output_RDGArchive = "$env:Public\Documents\RDGPackerDetector.zip"
+$output_RDG = "$env:Public\Documents\"
+(New-Object System.Net.WebClient).DownloadFile($url_RDG, $output_RDGArchive)
 
 $shell_2 = new-object -com shell.application
 $zip_2 = $shell_2.NameSpace($output_RDGArchive)
