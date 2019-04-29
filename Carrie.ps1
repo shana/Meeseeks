@@ -5,9 +5,12 @@
 # To install everything, run:
 #   Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
 #
- 
+
 write-output "Installing Chocolatey"
-Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
+iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
+ 
+write-output "Installing scoop"
+iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
 
 #--- Apps ---
 write-output "Installing a few apps"
