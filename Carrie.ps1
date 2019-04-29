@@ -6,14 +6,28 @@
 #   Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
 #
 
-Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+if((Get-ExecutionPolicy) -gt 'RemoteSigned' -or (Get-ExecutionPolicy) -eq 'ByPass') {
+    Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+}
 
-write-output "Installing Chocolatey"
-iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
- 
+& {
+    Trap {
+        Write-Output "Chocolatey installation failed"
+    }
+    write-output "Installing Chocolatey"
+    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
+}
+
+& {
+    Trap {
+        Write-Output "Something failed, aborting"
+        exit -1
+    }
+
+
 #--- System frameworks ---
 write-output "Installing essential system frameworks"
-choco install -y dotnet4.6.1 mingw 
+choco install -y dotnet4.6.1
 
 if ($PSVersionTable.PSVersion -lt "3.0") {
     choco install -y powershell4
@@ -24,7 +38,7 @@ iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
 
 #--- Essential tools
 write-output "Installing essential tooling"
-choco install -y winscp winrar 7zip netcat
+choco install -y winscp winrar 7zip netcat mingw
 
 #--- Git ---
 write-output "Installing git"
@@ -243,3 +257,5 @@ $Shortcut_2.Save()
 # $Shortcut_3 = $WScriptShell_3.CreateShortcut($ShortcutFile_3)
 # $Shortcut_3.TargetPath = $TargetFile_3
 # $Shortcut_3.Save()
+
+}
