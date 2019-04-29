@@ -3,27 +3,16 @@
 # Last Updated: 2018-08-20
 #
 # To install everything, run:
-#  iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
+#   Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
 #
 
 if((Get-ExecutionPolicy) -gt 'RemoteSigned' -or (Get-ExecutionPolicy) -eq 'ByPass') {
     Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 }
 
-& {
-    Trap {
-        Write-Output "Chocolatey installation failed"
-    }
-    write-output "Installing Chocolatey"
-    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
-}
-
-& {
-    Trap {
-        Write-Output "Something failed..."
-    }
-
-
+#write-output "Installing Chocolatey"
+#iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
+ 
 #--- System frameworks ---
 write-output "Installing essential system frameworks"
 choco install -y dotnet4.6.1
@@ -256,5 +245,3 @@ $Shortcut_2.Save()
 # $Shortcut_3 = $WScriptShell_3.CreateShortcut($ShortcutFile_3)
 # $Shortcut_3.TargetPath = $TargetFile_3
 # $Shortcut_3.Save()
-
-}
