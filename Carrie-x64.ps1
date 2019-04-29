@@ -3,7 +3,7 @@
 # Last Updated: 2018-08-20
 #
 # To install everything, run:
-#   Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
+#   Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie-x64.ps1'))
 #
  
 write-output "Installing Chocolatey"
@@ -112,48 +112,19 @@ $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $TargetFile
 $Shortcut.Save()
 
-write-output "...in a tragic twist of events, IDA Free can no longer be installed on a 32 bit OS."
-write-output "and the only free images of windows that I have found are 32 bit"
-write-output "...so here's a hack job"
-    # ─────────▄▄───────────────────▄▄──
-    # ──────────▀█───────────────────▀█─
-    # ──────────▄█───────────────────▄█─
-    # ──█████████▀───────────█████████▀─
-    # ───▄██████▄─────────────▄██████▄──
-    # ─▄██▀────▀██▄─────────▄██▀────▀██▄
-    # ─██────────██─────────██────────██
-    # ─██───██───██─────────██───██───██
-    # ─██────────██─────────██────────██
-    # ──██▄────▄██───────────██▄────▄██─
-    # ───▀██████▀─────────────▀██████▀──
-    # ──────────────────────────────────
-    # ──────────────────────────────────
-    # ──────────────────────────────────
-    # ───────────█████████████──────────
-    # ──────────────────────────────────
-    # ──────────────────────────────────
-
-# choco install -y ida-free --x86
-# $TargetFile = "C:\Program Files\IDA Freeware 7.0\ida.exe"
-# $ShortcutFile = "$env:Public\Desktop\Ida Freeware.lnk"
-# $WScriptShell = New-Object -ComObject WScript.Shell
-# $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-# $Shortcut.TargetPath = $TargetFile
-# $Shortcut.Save()
+choco install -y ida-free
+$TargetFile = "C:\Program Files\IDA Freeware 7.0\ida.exe"
+$ShortcutFile = "$env:Public\Desktop\Ida Freeware.lnk"
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $TargetFile
+$Shortcut.Save()
 
 choco install -y git
 $env:path+='C:\Program Files\Git\cmd'
 refreshenv
 
 git clone https://github.com/shana/Meeseeks.git
-
-choco install -y ida-5.0 -s .\Meeseeks\Packages\
-$TargetFile = "C:\Program Files\IDA Free\idag.exe"
-$ShortcutFile = "$env:Public\Desktop\Ida Free.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
 
 choco install -y Pestudio-Latest -s .\Meeseeks\Packages\
 $TargetFile = "C:\ProgramData\chocolatey\lib\pestudio-latest\tools\pestudio\pestudio.exe"
