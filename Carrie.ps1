@@ -3,7 +3,7 @@
 # Last Updated: 2018-08-20
 #
 # To install everything, run:
-#   Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
+#  iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
 #
 
 if((Get-ExecutionPolicy) -gt 'RemoteSigned' -or (Get-ExecutionPolicy) -eq 'ByPass') {
@@ -20,8 +20,7 @@ if((Get-ExecutionPolicy) -gt 'RemoteSigned' -or (Get-ExecutionPolicy) -eq 'ByPas
 
 & {
     Trap {
-        Write-Output "Something failed, aborting"
-        exit -1
+        Write-Output "Something failed..."
     }
 
 
