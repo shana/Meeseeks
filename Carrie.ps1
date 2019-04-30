@@ -70,10 +70,21 @@ New-Module -ScriptBlock {
         return (Test-Path $path) -and (Get-Item $path) -is [System.IO.DirectoryInfo]
     }
 
-    Export-ModuleMember -Function Add-Shortcut,Run-Command,Die,Is-Directory
+    function Download-Unzip([string]$url, [string]$zip, [string]$targetDir) {
+        (New-Object System.Net.WebClient).DownloadFile($url, $zip)
+        $shell_1 = new-object -com shell.application
+        $zip_1 = $shell_1.NameSpace($zip)
+        foreach($item_1 in $zip_1.items())
+        {
+            $shell_1.Namespace($targetDir).copyhere($item_1)
+        }
+    }
+
+    Export-ModuleMember -Function Add-Shortcut,Run-Command,Die,Is-Directory,Download-Unzip
 }
 
 set-location $env:USERPROFILE
+$Is64Bit=[System.Environment]::Is64BitOperatingSystem
 
 if((Get-ExecutionPolicy) -gt 'RemoteSigned' -or (Get-ExecutionPolicy) -eq 'ByPass') {
     Set-ExecutionPolicy RemoteSigned -scope CurrentUser
@@ -145,7 +156,7 @@ Add-Shortcut "C:\Program Files\NTCore\Explorer Suite\CFF Explorer.exe" "$env:Pub
 choco install -y ilspy 
 Add-Shortcut "C:\ProgramData\chocolatey\lib\ilspy\tools\ILSpy.exe" "$env:Public\Desktop\ILSpy.lnk"
 
-if ([System.Environment]::Is64BitOperatingSystem) {
+if ($Is64Bit) {
     choco install -y ida-free
     $TargetFile = "C:\Program Files\IDA Freeware 7.0\ida.exe"
 } else {
@@ -197,30 +208,15 @@ copy-item $source $destination -Recurse -Force
 Add-Shortcut "$env:Public\Documents\ByteHist\bytehist.exe" "$env:Public\Desktop\ByteHist.lnk"
 
 choco install -y ollydbg 
-Add-Shortcut "C:\Program Files (x86)\OllyDbg\OLLYDBG.EXE" "$env:Public\Desktop\OllyDbg.lnk"
-
-$url_OllyDump = "http://www.openrce.org/downloads/download_file/108"
-$output_OllyDumpArchive = "$env:Public\Documents\OllyDump.zip"
-$output_OllyDump = "C:\Program Files (x86)\OllyDbg\"
-(New-Object System.Net.WebClient).DownloadFile($url_OllyDump, $output_OllyDumpArchive)
-$shell_1 = new-object -com shell.application
-$zip_1 = $shell_1.NameSpace($output_OllyDumpArchive)
-foreach($item_1 in $zip_1.items())
-{
-        $shell_1.Namespace($output_OllyDump).copyhere($item_1)
+$OllyDbg = "C:\Program Files\OllyDbg\"
+if ($Is64Bit) {
+    $OllyDbg = "C:\Program Files (x86)\OllyDbg\"
 }
+Add-Shortcut "$OllyDbg\OLLYDBG.EXE" "$env:Public\Desktop\OllyDbg.lnk"
 
-$url_RDG = "http://rdgsoft.net/downloads/RDG.Packer.Detector.v0.7.6.2017.zip"
-$output_RDGArchive = "$env:Public\Documents\RDGPackerDetector.zip"
-$output_RDG = "$env:Public\Documents\"
-(New-Object System.Net.WebClient).DownloadFile($url_RDG, $output_RDGArchive)
+Download-Unzip "http://www.openrce.org/downloads/download_file/108" "$env:Public\Documents\OllyDump.zip" $OllyDbg
 
-$shell_2 = new-object -com shell.application
-$zip_2 = $shell_2.NameSpace($output_RDGArchive)
-foreach($item_2 in $zip_2.items())
-{
-        $shell_2.Namespace($output_RDG).copyhere($item_2)
-}
+Download-Unzip "http://rdgsoft.net/downloads/RDG.Packer.Detector.v0.7.6.2017.zip" "$env:Public\Documents\RDGPackerDetector.zip" "$env:Public\Documents\"
 Add-Shortcut "$env:Public\Documents\RDG Packer Detector v0.7.6.2017\RDG Packer Detector v0.7.6.exe" "$env:Public\Desktop\RDGPackerDetector.lnk"
 
 # $shell_3 = new-object -com shell.application
