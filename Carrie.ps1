@@ -159,6 +159,10 @@ write-output "Installing the RE tools"
 
 Choco-Install-Or-Update regshot --allow-empty-checksums
 Choco-Install-Or-Update windbg
+if (!$Is64Bit) {
+    # choco doesn't set the right shortcuts for some reason
+    Add-Shortcut "C:\Program Files\Windows Kits\10\Debuggers\x86\windbg.exe" "$env:Public\Desktop\windbg.lnk"
+}
 
 Choco-Install-Or-Update sysinternals
 Add-Shortcut "C:\ProgramData\chocolatey\lib\sysinternals\tools\" "$env:Public\Desktop\Sysinternals.lnk"
@@ -190,7 +194,7 @@ Add-Shortcut "C:\ProgramData\chocolatey\lib\ilspy\tools\ILSpy.exe" "$env:Public\
 
 if ($Is64Bit) {
     Choco-Install-Or-Update ida-free
-    $TargetFile = "C:\Program Files\IDA Freeware 7.0\ida.exe"
+    $TargetFile = "C:\Program Files\IDA Freeware 7.0\ida64.exe"
 } else {
     write-output "...in a tragic twist of events, IDA Free can no longer be installed on a 32 bit OS."
     write-output "and the only free images of windows that I have found are 32 bit"
