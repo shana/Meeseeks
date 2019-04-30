@@ -69,7 +69,6 @@ New-Module -ScriptBlock {
     function Is-Directory([String] $path) {
         return (Test-Path $path) -and (Get-Item $path) -is [System.IO.DirectoryInfo]
     }
-}
 
     Export-ModuleMember -Function Add-Shortcut,Run-Command,Die,Is-Directory
 }
