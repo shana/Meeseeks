@@ -102,7 +102,8 @@ choco install -y git
 $env:path+='C:\Program Files\Git\cmd'
 refreshenv
 
-if (!Is-Directory "Meeseeks") {
+$SkipClone = Is-Directory "Meeseeks"
+if (!$SkipClone) {
     Run-Command -Fatal { & "C:\Program Files\Git\cmd\git.exe" clone https://github.com/shana/Meeseeks.git }
 }
 
