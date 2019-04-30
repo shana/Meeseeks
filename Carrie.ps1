@@ -118,6 +118,8 @@ Choco-Install-Or-Update dotnet4.6.1
 
 if ($PSVersionTable.PSVersion -lt "3.0") {
     Choco-Install-Or-Update powershell4
+    write-output "You need to reboot now. Restart this script after rebooting to continue."
+    if($myinvocation.mycommand.commandtype -eq 'Script') { return } else { exit 0 }
 }
 
 #--- Essential tools
