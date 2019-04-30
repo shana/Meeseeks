@@ -3,7 +3,7 @@
 # Last Updated: 2018-08-20
 #
 # To install everything, run:
-#   Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
+#   iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
 #
 
 New-Module -ScriptBlock {
@@ -14,7 +14,49 @@ New-Module -ScriptBlock {
         $Shortcut.Save()
     }
 
-    Export-ModuleMember -Function Add-Shortcut
+    function Run-Command([scriptblock]$Command, [switch]$Fatal, [switch]$Quiet) {
+        $output = ""
+
+        $exitCode = 0
+
+        if ($Quiet) {
+            $output = & $command 2>&1 | %{ "$_" }
+        } else {
+            & $command
+        }
+
+        if (!$? -and $LastExitCode -ne 0) {
+            $exitCode = $LastExitCode
+        } elseif ($? -and $LastExitCode -ne 0) {
+            $exitCode = $LastExitCode
+        }
+
+        if ($exitCode -ne 0) {
+            if (!$Fatal) {
+                Write-Host "``$Command`` failed" $output
+            } else {
+                Die $exitCode "``$Command`` failed" $output
+            }
+        }
+        $output
+    }
+
+    function Die([int]$exitCode, [string]$message, [object[]]$output) {
+        #$host.SetShouldExit($exitCode)
+        if ($output) {
+            Write-Host $output
+            $message += ". See output above."
+        }
+        $hash = @{
+            Message = $message
+            ExitCode = $exitCode
+            Output = $output
+        }
+        Throw (New-Object -TypeName ScriptException -ArgumentList $message,$exitCode)
+        #throw $message
+    }
+
+    Export-ModuleMember -Function Add-Shortcut,Run-Command,Die
 }
 
 set-location $env:USERPROFILE
@@ -46,7 +88,7 @@ choco install -y git
 $env:path+='C:\Program Files\Git\cmd'
 refreshenv
 
-'C:\Program Files\Git\cmd\git.exe' clone https://github.com/shana/Meeseeks.git
+Run-Command -Fatal { & "C:\Program Files\Git\cmd\git.exe" clone https://github.com/shana/Meeseeks.git }
 
 #--- Apps ---
 write-output "Installing browsers and editors"
