@@ -59,6 +59,7 @@ if ($wmi -eq $null) {
 
 if ($DHCP) {
     $wmi.EnableDHCP()
+    $wmi.SetDNSServerSearchOrder()
     $wmi.RenewDHCPLease()
 } else {
     #--- IP settings ---
