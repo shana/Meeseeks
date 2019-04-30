@@ -8,13 +8,14 @@
 # or save it locally with
 #   Add-Content -Path Carrie.ps1 -Value ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
 # and then running it with
-#   Unlock-File .\Carrie.ps1; .\Carrie.ps1
+#   .\Carrie.ps1
 #
 
 Add-Type -TypeDefinition @"
 public class ScriptException : System.Exception
 {
-    public int ExitCode { get; private set; }
+    private int exitCode;
+    public int ExitCode { get { return exitCode; } set { exitCode = value; } }
     public ScriptException(string message, int exitCode) : base(message)
     {
         this.ExitCode = exitCode;
