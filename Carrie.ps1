@@ -1,10 +1,16 @@
 # Description: Malware Analysis Victim VM
 # Author: Bhavna Soman <bhavna.soman@gmail.com>
-# Last Updated: 2018-08-20
+# Author: Andreia Gaita <shana@spoiledcat.net>
+# Last Updated: 2019-04-30
 #
 # To install everything, run:
 #   iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
+# or save it locally with
+#   Add-Content -Path Carrie.ps1 -Value ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
+# and then running it with
+#   Unlock-File .\Carrie.ps1; .\Carrie.ps1
 #
+
 Add-Type -TypeDefinition @"
 public class ScriptException : System.Exception
 {
