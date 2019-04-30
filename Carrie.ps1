@@ -6,12 +6,27 @@
 #   Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
 #
 
+New-Module -ScriptBlock {
+    function Add-Shortcut([string]$TargetFile, [string]$ShortcutFile) {
+        $WScriptShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+        $Shortcut.TargetPath = $TargetFile
+        $Shortcut.Save()
+    }
+
+    Export-ModuleMember -Function Add-Shortcut
+}
+
+set-location $env:USERPROFILE
+
 if((Get-ExecutionPolicy) -gt 'RemoteSigned' -or (Get-ExecutionPolicy) -eq 'ByPass') {
     Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 }
 
-#write-output "Installing Chocolatey"
-#iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
+if ((Get-Command "choco" -ErrorAction SilentlyContinue) -eq $null) {
+    write-output "Installing Chocolatey"
+    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
+}
  
 #--- System frameworks ---
 write-output "Installing essential system frameworks"
@@ -20,9 +35,6 @@ choco install -y dotnet4.6.1
 if ($PSVersionTable.PSVersion -lt "3.0") {
     choco install -y powershell4
 }
-
-write-output "Installing scoop"
-iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
 
 #--- Essential tools
 write-output "Installing essential tooling"
@@ -34,6 +46,8 @@ choco install -y git
 $env:path+='C:\Program Files\Git\cmd'
 refreshenv
 
+'C:\Program Files\Git\cmd\git.exe' clone https://github.com/shana/Meeseeks.git
+
 #--- Apps ---
 write-output "Installing browsers and editors"
 choco install -y googlechrome notepadplusplus sublimetext3 
@@ -44,132 +58,69 @@ write-output "Installing the RE tools"
 choco install -y regshot --allow-empty-checksums
 choco install -y windbg
 
-choco install -y sysinternals 
-$TargetFile = "C:\ProgramData\chocolatey\lib\sysinternals\tools\"
-$ShortcutFile = "$env:Public\Desktop\Sysinternals.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
-
-$TargetFile = "C:\ProgramData\chocolatey\lib\sysinternals\tools\Procmon.exe"
-$ShortcutFile = "$env:Public\Desktop\Procmon.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
-
-$TargetFile = "C:\ProgramData\chocolatey\lib\sysinternals\tools\procexp.exe"
-$ShortcutFile = "$env:Public\Desktop\Procexp.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+choco install -y sysinternals
+Add-Shortcut "C:\ProgramData\chocolatey\lib\sysinternals\tools\" "$env:Public\Desktop\Sysinternals.lnk"
+Add-Shortcut "C:\ProgramData\chocolatey\lib\sysinternals\tools\Procmon.exe" "$env:Public\Desktop\Procmon.lnk"
+Add-Shortcut "C:\ProgramData\chocolatey\lib\sysinternals\tools\procexp.exe" "$env:Public\Desktop\Procexp.lnk"
 
 choco install -y dependencywalker 
-$TargetFile = "C:\ProgramData\chocolatey\lib\dependencywalker\content\depends.exe"
-$ShortcutFile = "$env:Public\Desktop\DependencyWalker.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Add-Shortcut "C:\ProgramData\chocolatey\lib\dependencywalker\content\depends.exe" "$env:Public\Desktop\DependencyWalker.lnk"
 
 choco install -y wireshark 
-$TargetFile = "C:\Program Files\Wireshark\Wireshark.exe"
-$ShortcutFile = "$env:Public\Desktop\Wireshark.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Add-Shortcut "C:\Program Files\Wireshark\Wireshark.exe" "$env:Public\Desktop\Wireshark.lnk"
 
 choco install -y hxd 
-$TargetFile = "C:\Program Files\HxD\HxD.exe"
-$ShortcutFile = "$env:Public\Desktop\HxD.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Add-Shortcut "C:\Program Files\HxD\HxD.exe" "$env:Public\Desktop\HxD.lnk"
 
-choco install -y javadecompiler-gui 
-$TargetFile = "C:\ProgramData\chocolatey\lib\javadecompiler-gui\tools\jd-gui-windows-1.4.0\jd-gui.exe" 
-$ShortcutFile = "$env:Public\Desktop\Javadecompiler-Gui.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+choco install -y javadecompiler-gui
+Add-Shortcut "C:\ProgramData\chocolatey\lib\javadecompiler-gui\tools\jd-gui-windows-1.4.0\jd-gui.exe" "$env:Public\Desktop\Javadecompiler-Gui.lnk"
 
 choco install -y upx 
-$TargetFile = "C:\ProgramData\chocolatey\lib\upx\tools\upx394w\upx.exe"
-$ShortcutFile = "$env:Public\Desktop\Upx.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Add-Shortcut "C:\ProgramData\chocolatey\lib\upx\tools\upx394w\upx.exe" "$env:Public\Desktop\Upx.lnk"
 
-choco install -y processhacker  
+choco install -y processhacker
 
 choco install -y explorersuite 
-$TargetFile = "C:\Program Files\NTCore\Explorer Suite\CFF Explorer.exe"
-$ShortcutFile = "$env:Public\Desktop\Cff Explorer.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Add-Shortcut "C:\Program Files\NTCore\Explorer Suite\CFF Explorer.exe" "$env:Public\Desktop\Cff Explorer.lnk"
 
 choco install -y ilspy 
-$TargetFile = "C:\ProgramData\chocolatey\lib\ilspy\tools\ILSpy.exe"
-$ShortcutFile = "$env:Public\Desktop\ILSpy.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Add-Shortcut "C:\ProgramData\chocolatey\lib\ilspy\tools\ILSpy.exe" "$env:Public\Desktop\ILSpy.lnk"
 
-write-output "...in a tragic twist of events, IDA Free can no longer be installed on a 32 bit OS."
-write-output "and the only free images of windows that I have found are 32 bit"
-write-output "...so here's a hack job"
-    # ─────────▄▄───────────────────▄▄──
-    # ──────────▀█───────────────────▀█─
-    # ──────────▄█───────────────────▄█─
-    # ──█████████▀───────────█████████▀─
-    # ───▄██████▄─────────────▄██████▄──
-    # ─▄██▀────▀██▄─────────▄██▀────▀██▄
-    # ─██────────██─────────██────────██
-    # ─██───██───██─────────██───██───██
-    # ─██────────██─────────██────────██
-    # ──██▄────▄██───────────██▄────▄██─
-    # ───▀██████▀─────────────▀██████▀──
-    # ──────────────────────────────────
-    # ──────────────────────────────────
-    # ──────────────────────────────────
-    # ───────────█████████████──────────
-    # ──────────────────────────────────
-    # ──────────────────────────────────
+if ([System.Environment]::Is64BitOperatingSystem) {
+    choco install -y ida-free
+    $TargetFile = "C:\Program Files\IDA Freeware 7.0\ida.exe"
+} else {
+    write-output "...in a tragic twist of events, IDA Free can no longer be installed on a 32 bit OS."
+    write-output "and the only free images of windows that I have found are 32 bit"
+    write-output "...so here's a hack job"
+        # ─────────▄▄───────────────────▄▄──
+        # ──────────▀█───────────────────▀█─
+        # ──────────▄█───────────────────▄█─
+        # ──█████████▀───────────█████████▀─
+        # ───▄██████▄─────────────▄██████▄──
+        # ─▄██▀────▀██▄─────────▄██▀────▀██▄
+        # ─██────────██─────────██────────██
+        # ─██───██───██─────────██───██───██
+        # ─██────────██─────────██────────██
+        # ──██▄────▄██───────────██▄────▄██─
+        # ───▀██████▀─────────────▀██████▀──
+        # ──────────────────────────────────
+        # ──────────────────────────────────
+        # ──────────────────────────────────
+        # ───────────█████████████──────────
+        # ──────────────────────────────────
+        # ──────────────────────────────────
 
-git clone https://github.com/shana/Meeseeks.git
-
-choco install -y ida-5.0 -s .\Meeseeks\Packages\
-$TargetFile = "C:\Program Files\IDA Free\idag.exe"
-$ShortcutFile = "$env:Public\Desktop\Ida Free.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+    choco install -y ida-5.0 -s .\Meeseeks\Packages\
+    $TargetFile = "C:\Program Files\IDA Free\idag.exe"
+}
+Add-Shortcut $TargetFile "$env:Public\Desktop\Ida Free.lnk"
 
 choco install -y Pestudio-Latest -s .\Meeseeks\Packages\
-$TargetFile = "C:\ProgramData\chocolatey\lib\pestudio-latest\tools\pestudio\pestudio.exe"
-$ShortcutFile = "$env:Public\Desktop\Pestudio.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Add-Shortcut "C:\ProgramData\chocolatey\lib\pestudio-latest\tools\pestudio\pestudio.exe" "$env:Public\Desktop\Pestudio.lnk"
 
 choco install -y FileAlyzer -s .\Meeseeks\Packages\
-$TargetFile = "C:\Program Files\Safer Networking\FileAlyzer 2\FileAlyzer2.exe"
-$ShortcutFile = "$env:Public\Desktop\FileAlyzer.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Add-Shortcut "C:\Program Files\Safer Networking\FileAlyzer 2\FileAlyzer2.exe" "$env:Public\Desktop\FileAlyzer.lnk"
 
 # $url_ByteHist = "https://cert.at/static/downloads/software/bytehist/bytehist_1_0_102_windows.zip"
 # $output_ByteHistArchive = "$env:Public\Documents\bytehist_1_0_102_windows.zip"
@@ -179,30 +130,15 @@ $Shortcut.Save()
 $source = ".\Meeseeks\Packages\Scylla\Scylla v0.9.7c"
 $destination = "$env:Public\Documents\"
 copy-item $source $destination -Recurse -Force
-$TargetFile = "$env:Public\Documents\Scylla v0.9.7c\Scylla_x86.exe"
-$ShortcutFile = "$env:Public\Desktop\Scylla.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Add-Shortcut "$env:Public\Documents\Scylla v0.9.7c\Scylla_x86.exe" "$env:Public\Desktop\Scylla.lnk"
 
 $source = ".\Meeseeks\Packages\bytehist_1_0_102_windows\win32"
 $destination = "$env:Public\Documents\ByteHist"
 copy-item $source $destination -Recurse -Force
-$TargetFile = "$env:Public\Documents\ByteHist\bytehist.exe"
-$ShortcutFile = "$env:Public\Desktop\ByteHist.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Add-Shortcut "$env:Public\Documents\ByteHist\bytehist.exe" "$env:Public\Desktop\ByteHist.lnk"
 
 choco install -y ollydbg 
-$TargetFile = "C:\Program Files (x86)\OllyDbg\OLLYDBG.EXE"
-$ShortcutFile = "$env:Public\Desktop\OllyDbg.lnk"
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-$Shortcut.TargetPath = $TargetFile
-$Shortcut.Save()
+Add-Shortcut "C:\Program Files (x86)\OllyDbg\OLLYDBG.EXE" "$env:Public\Desktop\OllyDbg.lnk"
 
 $url_OllyDump = "http://www.openrce.org/downloads/download_file/108"
 $output_OllyDumpArchive = "$env:Public\Documents\OllyDump.zip"
@@ -226,12 +162,7 @@ foreach($item_2 in $zip_2.items())
 {
         $shell_2.Namespace($output_RDG).copyhere($item_2)
 }
-$TargetFile_2 = "$env:Public\Documents\RDG Packer Detector v0.7.6.2017\RDG Packer Detector v0.7.6.exe"
-$ShortcutFile_2 = "$env:Public\Desktop\RDGPackerDetector.lnk"
-$WScriptShell_2 = New-Object -ComObject WScript.Shell
-$Shortcut_2 = $WScriptShell_2.CreateShortcut($ShortcutFile_2)
-$Shortcut_2.TargetPath = $TargetFile_2
-$Shortcut_2.Save()
+Add-Shortcut "$env:Public\Documents\RDG Packer Detector v0.7.6.2017\RDG Packer Detector v0.7.6.exe" "$env:Public\Desktop\RDGPackerDetector.lnk"
 
 # $shell_3 = new-object -com shell.application
 # $zip_3 = $shell_3.NameSpace($output_ByteHistArchive)
@@ -245,3 +176,8 @@ $Shortcut_2.Save()
 # $Shortcut_3 = $WScriptShell_3.CreateShortcut($ShortcutFile_3)
 # $Shortcut_3.TargetPath = $TargetFile_3
 # $Shortcut_3.Save()
+
+if ((Get-Command "scoop" -ErrorAction SilentlyContinue) -eq $null) {
+    write-output "Installing scoop"
+    iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+}

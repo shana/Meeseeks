@@ -8,8 +8,10 @@
  
 Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 
-write-output "Installing Chocolatey"
-iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
+if ((Get-Command "choco" -ErrorAction SilentlyContinue) -eq $null) {
+    write-output "Installing Chocolatey"
+    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')) 
+}
 
 #--- System frameworks ---
 write-output "Installing essential system frameworks"
@@ -178,13 +180,12 @@ $Shortcut.TargetPath = $TargetFile
 $Shortcut.Save()
 
 choco install -y ollydbg 
-$TargetFile = "C:\Program Files\OllyDbg\OLLYDBG.EXE"
+$TargetFile = "C:\Program Files (x86)\OllyDbg\OLLYDBG.EXE"
 $ShortcutFile = "$env:Public\Desktop\OllyDbg.lnk"
 $WScriptShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
 $Shortcut.TargetPath = $TargetFile
 $Shortcut.Save()
-
 
 $url_OllyDump = "http://www.openrce.org/downloads/download_file/108"
 $output_OllyDumpArchive = "$env:Public\Documents\OllyDump.zip"
@@ -227,3 +228,8 @@ $Shortcut_2.Save()
 # $Shortcut_3 = $WScriptShell_3.CreateShortcut($ShortcutFile_3)
 # $Shortcut_3.TargetPath = $TargetFile_3
 # $Shortcut_3.Save()
+
+if ((Get-Command "scoop" -ErrorAction SilentlyContinue) -eq $null) {
+    write-output "Installing scoop"
+    iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+}
