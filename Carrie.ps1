@@ -80,7 +80,24 @@ New-Module -ScriptBlock {
         }
     }
 
-    Export-ModuleMember -Function Add-Shortcut,Run-Command,Die,Is-Directory,Download-Unzip
+    function Choco-Install-Or-Update([string]$package, [switch]$s, [string]$source) {
+        $isInstalled = choco list -lo | Where-object { $_.ToLower().StartsWith($package.ToLower()) }
+        if ($isInstalled) {
+            if ($s) {
+                choco update -y $package -s $source
+            } else {
+                choco update -y $package
+            }
+        } else {
+            if ($s) {
+                choco install -y $package -s $source
+            } else {
+                choco install -y $package
+            }
+        }
+    }
+
+    Export-ModuleMember -Function Add-Shortcut,Run-Command,Die,Is-Directory,Download-Unzip,Choco-Install-Or-Update
 }
 
 set-location $env:USERPROFILE
@@ -97,19 +114,23 @@ if ((Get-Command "choco" -ErrorAction SilentlyContinue) -eq $null) {
  
 #--- System frameworks ---
 write-output "Installing essential system frameworks"
-choco install -y dotnet4.6.1
+Choco-Install-Or-Update dotnet4.6.1
 
 if ($PSVersionTable.PSVersion -lt "3.0") {
-    choco install -y powershell4
+    Choco-Install-Or-Update powershell4
 }
 
 #--- Essential tools
 write-output "Installing essential tooling"
-choco install -y winscp winrar 7zip netcat mingw
+Choco-Install-Or-Update winscp
+Choco-Install-Or-Update winrar
+Choco-Install-Or-Update 7zip
+Choco-Install-Or-Update netcat
+Choco-Install-Or-Update mingw
 
 #--- Git ---
 write-output "Installing git"
-choco install -y git
+Choco-Install-Or-Update git
 $env:path+='C:\Program Files\Git\cmd'
 refreshenv
 
@@ -120,44 +141,46 @@ if (!$SkipClone) {
 
 #--- Apps ---
 write-output "Installing browsers and editors"
-choco install -y googlechrome notepadplusplus sublimetext3 
+Choco-Install-Or-Update googlechrome
+Choco-Install-Or-Update notepadplusplus
+Choco-Install-Or-Update sublimetext3 
 
 #---- RE Tools ---
 write-output "Installing the RE tools"
 
-choco install -y regshot --allow-empty-checksums
-choco install -y windbg
+Choco-Install-Or-Update regshot --allow-empty-checksums
+Choco-Install-Or-Update windbg
 
-choco install -y sysinternals
+Choco-Install-Or-Update sysinternals
 Add-Shortcut "C:\ProgramData\chocolatey\lib\sysinternals\tools\" "$env:Public\Desktop\Sysinternals.lnk"
 Add-Shortcut "C:\ProgramData\chocolatey\lib\sysinternals\tools\Procmon.exe" "$env:Public\Desktop\Procmon.lnk"
 Add-Shortcut "C:\ProgramData\chocolatey\lib\sysinternals\tools\procexp.exe" "$env:Public\Desktop\Procexp.lnk"
 
-choco install -y dependencywalker 
+Choco-Install-Or-Update dependencywalker 
 Add-Shortcut "C:\ProgramData\chocolatey\lib\dependencywalker\content\depends.exe" "$env:Public\Desktop\DependencyWalker.lnk"
 
-choco install -y wireshark 
+Choco-Install-Or-Update wireshark 
 Add-Shortcut "C:\Program Files\Wireshark\Wireshark.exe" "$env:Public\Desktop\Wireshark.lnk"
 
-choco install -y hxd 
+Choco-Install-Or-Update hxd 
 Add-Shortcut "C:\Program Files\HxD\HxD.exe" "$env:Public\Desktop\HxD.lnk"
 
-choco install -y javadecompiler-gui
+Choco-Install-Or-Update javadecompiler-gui
 Add-Shortcut "C:\ProgramData\chocolatey\lib\javadecompiler-gui\tools\jd-gui-windows-1.4.0\jd-gui.exe" "$env:Public\Desktop\Javadecompiler-Gui.lnk"
 
-choco install -y upx 
+Choco-Install-Or-Update upx 
 Add-Shortcut "C:\ProgramData\chocolatey\lib\upx\tools\upx394w\upx.exe" "$env:Public\Desktop\Upx.lnk"
 
-choco install -y processhacker
+Choco-Install-Or-Update processhacker
 
-choco install -y explorersuite 
+Choco-Install-Or-Update explorersuite 
 Add-Shortcut "C:\Program Files\NTCore\Explorer Suite\CFF Explorer.exe" "$env:Public\Desktop\Cff Explorer.lnk"
 
-choco install -y ilspy 
+Choco-Install-Or-Update ilspy 
 Add-Shortcut "C:\ProgramData\chocolatey\lib\ilspy\tools\ILSpy.exe" "$env:Public\Desktop\ILSpy.lnk"
 
 if ($Is64Bit) {
-    choco install -y ida-free
+    Choco-Install-Or-Update ida-free
     $TargetFile = "C:\Program Files\IDA Freeware 7.0\ida.exe"
 } else {
     write-output "...in a tragic twist of events, IDA Free can no longer be installed on a 32 bit OS."
@@ -181,15 +204,15 @@ if ($Is64Bit) {
         # ──────────────────────────────────
         # ──────────────────────────────────
 
-    choco install -y ida-5.0 -s .\Meeseeks\Packages\
+    Choco-Install-Or-Update ida-5.0 -s .\Meeseeks\Packages\
     $TargetFile = "C:\Program Files\IDA Free\idag.exe"
 }
 Add-Shortcut $TargetFile "$env:Public\Desktop\Ida Free.lnk"
 
-choco install -y Pestudio-Latest -s .\Meeseeks\Packages\
+Choco-Install-Or-Update Pestudio-Latest -s .\Meeseeks\Packages\
 Add-Shortcut "C:\ProgramData\chocolatey\lib\pestudio-latest\tools\pestudio\pestudio.exe" "$env:Public\Desktop\Pestudio.lnk"
 
-choco install -y FileAlyzer -s .\Meeseeks\Packages\
+Choco-Install-Or-Update FileAlyzer -s .\Meeseeks\Packages\
 Add-Shortcut "C:\Program Files\Safer Networking\FileAlyzer 2\FileAlyzer2.exe" "$env:Public\Desktop\FileAlyzer.lnk"
 
 # $url_ByteHist = "https://cert.at/static/downloads/software/bytehist/bytehist_1_0_102_windows.zip"
@@ -207,7 +230,7 @@ $destination = "$env:Public\Documents\ByteHist"
 copy-item $source $destination -Recurse -Force
 Add-Shortcut "$env:Public\Documents\ByteHist\bytehist.exe" "$env:Public\Desktop\ByteHist.lnk"
 
-choco install -y ollydbg 
+Choco-Install-Or-Update ollydbg 
 $OllyDbg = "C:\Program Files\OllyDbg\"
 if ($Is64Bit) {
     $OllyDbg = "C:\Program Files (x86)\OllyDbg\"
