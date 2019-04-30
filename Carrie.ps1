@@ -5,6 +5,16 @@
 # To install everything, run:
 #   iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/shana/Meeseeks/master/Carrie.ps1'))
 #
+Add-Type -TypeDefinition @"
+public class ScriptException : System.Exception
+{
+    public int ExitCode { get; private set; }
+    public ScriptException(string message, int exitCode) : base(message)
+    {
+        this.ExitCode = exitCode;
+    }
+}
+"@
 
 New-Module -ScriptBlock {
     function Add-Shortcut([string]$TargetFile, [string]$ShortcutFile) {
