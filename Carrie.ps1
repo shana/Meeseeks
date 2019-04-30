@@ -66,7 +66,12 @@ New-Module -ScriptBlock {
         #throw $message
     }
 
-    Export-ModuleMember -Function Add-Shortcut,Run-Command,Die
+    function Is-Directory([String] $path) {
+        return (Test-Path $path) -and (Get-Item $path) -is [System.IO.DirectoryInfo]
+    }
+}
+
+    Export-ModuleMember -Function Add-Shortcut,Run-Command,Die,Is-Directory
 }
 
 set-location $env:USERPROFILE
@@ -98,7 +103,9 @@ choco install -y git
 $env:path+='C:\Program Files\Git\cmd'
 refreshenv
 
-Run-Command -Fatal { & "C:\Program Files\Git\cmd\git.exe" clone https://github.com/shana/Meeseeks.git }
+if (!Is-Directory "Meeseeks") {
+    Run-Command -Fatal { & "C:\Program Files\Git\cmd\git.exe" clone https://github.com/shana/Meeseeks.git }
+}
 
 #--- Apps ---
 write-output "Installing browsers and editors"
