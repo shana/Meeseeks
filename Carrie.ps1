@@ -226,7 +226,11 @@ Choco-Install-Or-Update Pestudio-Latest -s .\Meeseeks\Packages\
 Add-Shortcut "C:\ProgramData\chocolatey\lib\pestudio-latest\tools\pestudio\pestudio.exe" "$env:Public\Desktop\Pestudio.lnk"
 
 Choco-Install-Or-Update FileAlyzer -s .\Meeseeks\Packages\
-Add-Shortcut "C:\Program Files\Safer Networking\FileAlyzer 2\FileAlyzer2.exe" "$env:Public\Desktop\FileAlyzer.lnk"
+if ($Is64Bit) {
+    Add-Shortcut "C:\Program Files (x86)\Safer Networking\FileAlyzer 2\FileAlyzer2.exe" "$env:Public\Desktop\FileAlyzer.lnk"
+} else {
+    Add-Shortcut "C:\Program Files\Safer Networking\FileAlyzer 2\FileAlyzer2.exe" "$env:Public\Desktop\FileAlyzer.lnk"
+}
 
 # $url_ByteHist = "https://cert.at/static/downloads/software/bytehist/bytehist_1_0_102_windows.zip"
 # $output_ByteHistArchive = "$env:Public\Documents\bytehist_1_0_102_windows.zip"
