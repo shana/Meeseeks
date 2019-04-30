@@ -84,9 +84,9 @@ New-Module -ScriptBlock {
         $isInstalled = choco list -lo | Where-object { $_.ToLower().StartsWith($package.ToLower()) }
         if ($isInstalled) {
             if ($s) {
-                choco update -y $package -s $source
+                choco upgrade -y $package -s $source
             } else {
-                choco update -y $package
+                choco upgrade -y $package
             }
         } else {
             if ($s) {
